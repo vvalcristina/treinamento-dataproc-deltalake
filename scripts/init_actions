@@ -1,0 +1,8 @@
+#! /bin/bash -e
+
+#Jobs de inicialização do Workflow template
+set -exo pipefail
+source /etc/profile.d/conda.sh
+gsutil cp -r gs://${GCP_BUCKET_CODE}/ /
+cd /${GCP_BUCKET_CODE}/
+pip install -r requirements.txt

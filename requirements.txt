@@ -1,0 +1,6 @@
+google-cloud-bigquery==1.23.1
+jgscm==0.1.7
+google-cloud-storage==1.25.0
+google-cloud-secret-manager==0.1.1
+pyspark==3.0.0
+pytest

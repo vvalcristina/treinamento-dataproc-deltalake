@@ -1,0 +1,7 @@
+#! /bin/bash -xe
+
+#Substituir no script o PROJECT_ID e o GCLOUD_NAME_BUCKET pelo nome do projeto e o nome do bucket
+export GCLOUD_PROJECT=${PROJECT_ID}
+export GCLOUD_CODE_BUCKET_NAME=${GCLOUD_NAME_BUCKET}
+export GCLOUD_SERVICEACCOUNT=dataproc-runner@${GCLOUD_PROJECT}.iam.gserviceaccount.com
+export PYTHONPATH=/${GCLOUD_CODE_BUCKET_NAME}

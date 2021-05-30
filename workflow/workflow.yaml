@@ -1,0 +1,72 @@
+jobs:
+- pysparkJob:
+    args:
+    - deltalake
+    mainPythonFileUri: gs://${GCP_BUCKET_CODE_NAME}/jobs/job_deltalake.py
+  stepId: deltalake
+placement:
+  managedCluster:
+    clusterName: deltalake
+    config:
+      encryptionConfig: { }
+      endpointConfig: { }
+      gceClusterConfig:
+        networkUri: 
+        privateIpv6GoogleAccess: OUTBOUND
+        serviceAccountScopes:
+          - https://www.googleapis.com/auth/bigquery
+          - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+          - https://www.googleapis.com/auth/devstorage.full_control
+          - https://www.googleapis.com/auth/devstorage.read_write
+          - https://www.googleapis.com/auth/logging.write
+        zoneUri: us-east1-b
+      initializationActions:
+        - executableFile: gs://${GCP_BUCKET_CODE_NAME}/scripts/init_actions
+      masterConfig:
+        diskConfig:
+          bootDiskSizeGb: 500
+          bootDiskType: pd-standard
+        machineTypeUri: n1-standard-4
+        minCpuPlatform: AUTOMATIC
+        numInstances: 1
+        preemptibility: NON_PREEMPTIBLE
+      securityConfig:
+        kerberosConfig: { }
+      softwareConfig:
+        imageVersion: 2.0.0-RC22-ubuntu18
+        properties:
+          capacity-scheduler:yarn.scheduler.capacity.root.default.ordering-policy: fair
+          spark-env:SPARK_DAEMON_MEMORY: 3840m
+          spark:spark.driver.maxResultSize: 1920m
+          spark:spark.driver.memory: 10g
+          spark:spark.executor.cores: '2'
+          spark:spark.executor.instances: '2'
+          spark:spark.executor.memory: 10g
+          spark:spark.executorEnv.OPENBLAS_NUM_THREADS: '1'
+          spark:spark.scheduler.mode: FAIR
+          spark:spark.sql.cbo.enabled: 'true'
+          spark:spark.ui.port: '0'
+          spark:spark.yarn.am.memory: 640m
+          spark:spark.jars.packages: 'io.delta:delta-core_2.12:0.8.0,com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.19.1'
+          spark:spark.sql.extensions: io.delta.sql.DeltaSparkSessionExtension
+          spark:spark.sql.catalog.spark_catalog: org.apache.spark.sql.delta.catalog.DeltaCatalog
+          spark:spark.databricks.delta.schema.autoMerge.enabled: "true"
+          yarn-env:YARN_NODEMANAGER_HEAPSIZE: '1536'
+          yarn-env:YARN_RESOURCEMANAGER_HEAPSIZE: '3840'
+          yarn-env:YARN_TIMELINESERVER_HEAPSIZE: '3840'
+          yarn:yarn.nodemanager.address: 0.0.0.0:8026
+          yarn:yarn.nodemanager.resource.cpu-vcores: '4'
+          yarn:yarn.nodemanager.resource.memory-mb: '12624'
+          yarn:yarn.resourcemanager.nodemanager-graceful-decommission-timeout-secs: '86400'
+          yarn:yarn.scheduler.maximum-allocation-mb: '12624'
+          yarn:yarn.scheduler.minimum-allocation-mb: '1'
+      workerConfig:
+        diskConfig:
+          bootDiskSizeGb: 500
+          bootDiskType: pd-standard
+        machineTypeUri: n1-standard-4
+        minCpuPlatform: AUTOMATIC
+        numInstances: 2
+        preemptibility: NON_PREEMPTIBLE
+    labels:
+      customer: deltalake
