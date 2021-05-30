@@ -21,7 +21,7 @@ Este repositório tem o objetivo de prover um ambiente de treinamento da integra
     ├── workflow
         ├── workflow.yaml           -> Workflow template do Dataproc com DeltaLake
     ├── .gitignore                  -> .gitignore
-    ├── HandsOn DeltaLake.ipynb     -> Notebook de exploração do deltalake e criação        de dataframes para exploração
+    ├── HandsOn DeltaLake.ipynb     -> Notebook de exploração do deltalake e criação dos dataframes para exploração
     ├── README.md                   -> README.md 
     ├── requirements.txt            -> Libs necessarias para execução
     ├── setup.py                    -> setup.py
