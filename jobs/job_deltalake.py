@@ -40,6 +40,7 @@ def main(spark):
             .whenNotMatchedInsertAll() \
             .execute()
     table.toDF().show(truncate=False)
-
+    table.vacuum()
+    
 if __name__ == "__main__":
     main(spark)
