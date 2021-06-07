@@ -1,10 +1,7 @@
-#!/usr/bin/python
-# Author: Valeria Silva
-# License: MIT
-
 import pyspark
+import logging
 
-spark = pyspark.sql.SparkSession.builder.appName("JobIncremental") \
+spark = pyspark.sql.SparkSession.builder.appName("DeltaLake") \
     .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0") \
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
@@ -14,33 +11,55 @@ spark = pyspark.sql.SparkSession.builder.appName("JobIncremental") \
     .config("spark.databricks.delta.vacuum.parallelDelete.enabled","true") \
     .getOrCreate()
 
-from delta.tables import *
+from delta import *
 from pyspark.sql.functions import *
+class JobIncremental():
 
-def main(spark):
-    path_input = "gs://${BUCKET_CODE_NAME}/input/"
-    path_output = "output/"
-    df_input = spark.read.format("parquet").option("inferSchema", "false").load(path_input)
-    df_input.write.format("delta").save(path_output)
-    df_3= spark.createDataFrame(
-    [
-        (5, date.today(), 'Input dataframe'),
+    def __init__(self):
 
-    ],
-        ['id','data', 'texto']
-    )
-    df = spark.read.format("delta").load(path_output)
-    df.show()
-    table = DeltaTable.forPath(spark, path_output)
-    table.toDF().show(truncate=False)
-    table.alias("persisteddata") .merge( \
-        df_3.alias("newdata"), \
-            "persisteddata.id = newdata.id") \
-            .whenMatchedUpdateAll() \
-            .whenNotMatchedInsertAll() \
-            .execute()
-    table.toDF().show(truncate=False)
-    table.vacuum()
-    
+        self.path_input = 'gs://{BUCKET_LAKE_NAME}/transient/sample.parquet/'
+        self.path_output = 'gs://{BUCKET_LAKE_NAME}/raw/sample.parquet/'
+        self.spark = (pyspark.sql.SparkSession.builder.appName("DeltaLake") \
+            .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0") \
+            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+            .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+            .config("spark.databricks.delta.schema.autoMerge.enabled","true") \
+            .config("spark.databricks.delta.autoOptimize.optimizeWrite","true") \
+            .config("spark.databricks.delta.optimizeWrite.enabled","true") \
+            .config("spark.databricks.delta.vacuum.parallelDelete.enabled","true") \
+            .getOrCreate())
+
+    def table_exists(self, path_output: str) -> bool:
+        return DeltaTable.isDeltaTable(self.spark, path_output)
+
+    def get_incremental_load(self):
+        df = spark.read.format("parquet").option("inferSchema", "false").load(self.path_input)
+        if not self.table_exists(self.path_output):
+            try:
+                df.write.format("delta").mode("overwrite").save(self.path_output)
+                df.show()
+            except Exception as e:
+                logging.error(f'unexpected error: {str(e)}')
+        else:
+            try:
+                logging.info(f'Writing on path: {self.path_output}')
+                deltaTable =DeltaTable.forPath(self.spark, self.path_output)
+                (
+                    deltaTable.alias("persisteddata").merge( \
+                        df.alias("newdata"), \
+                        "persisteddata.id = newdata.id") \
+                        .whenMatchedUpdateAll() \
+                        .whenNotMatchedInsertAll() \
+                        .execute()
+                 )
+                deltaTable.vacuum()
+                deltaTable.toDF().printSchema()
+            except Exception as e:
+                raise e
+
+    def main(self):
+        self.get_incremental_load()
+        
 if __name__ == "__main__":
-    main(spark)
+    deltaLakeJob = JobIncremental()
+    deltaLakeJob.main()

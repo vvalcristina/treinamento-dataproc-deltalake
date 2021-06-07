@@ -4,4 +4,4 @@
 export GCLOUD_PROJECT=${PROJECT_ID}
 export GCLOUD_CODE_BUCKET_NAME=${GCLOUD_NAME_BUCKET}
 export GCLOUD_SERVICEACCOUNT=dataproc-runner@${GCLOUD_PROJECT}.iam.gserviceaccount.com
-export PYTHONPATH=/${GCLOUD_CODE_BUCKET_NAME}
+export REGION=us-east1
