@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $DIR
 
-source ./load_env 
+source ./env 
 
 gcloud config set project ${PROJECT_ID}
 
@@ -15,6 +15,7 @@ gsutil -m cp -r "$DIR/../input/" "gs://${GCP_BUCKET_CODE_NAME}/deltalake/input/"
 gsutil -m cp -r "$DIR/../scripts/init_actions" "gs://${GCP_BUCKET_CODE_NAME}/scripts/init_actions"
 gsutil cp "$DIR/../requirements.txt" "gs://${GCP_BUCKET_CODE_NAME}/requirements.txt"
 gsutil cp "$DIR/../setup.py" "gs://${GCP_BUCKET_CODE_NAME}/setup.py"
+echo "--------------Finalizando o deploy do código---------------"
 
 #Run do Dataproc
 gcloud dataproc workflow-templates instantiate-from-file --file "$DIR/../workflow/workflow.yaml" --region=${REGION}

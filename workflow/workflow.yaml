@@ -2,7 +2,8 @@ jobs:
 - pysparkJob:
     args:
     - deltalake
-    mainPythonFileUri: gs://${GCP_BUCKET_CODE_NAME}/jobs/job_deltalake.py
+    #Caminho do job de execução no GCS
+    mainPythonFileUri: gs://{{GCP_BUCKET_CODE_NAME}}/jobs/job_deltalake.py
   stepId: deltalake
 placement:
   managedCluster:
@@ -13,6 +14,7 @@ placement:
       gceClusterConfig:
         networkUri: 
         privateIpv6GoogleAccess: OUTBOUND
+        #Permissões necessárias para execução desse template
         serviceAccountScopes:
           - https://www.googleapis.com/auth/bigquery
           - https://www.googleapis.com/auth/cloud.useraccounts.readonly
@@ -20,8 +22,10 @@ placement:
           - https://www.googleapis.com/auth/devstorage.read_write
           - https://www.googleapis.com/auth/logging.write
         zoneUri: us-east1-b
+      #Ações a serem rodadas antes do inicio do Job
       initializationActions:
-        - executableFile: gs://${GCP_BUCKET_CODE_NAME}/scripts/init_actions
+        - executableFile: gs://{{GCP_BUCKET_CODE_NAME}}/scripts/init_actions
+      #Configurações das máquinas do Cluster Dataproc
       masterConfig:
         diskConfig:
           bootDiskSizeGb: 500
@@ -30,15 +34,6 @@ placement:
         minCpuPlatform: AUTOMATIC
         numInstances: 1
         preemptibility: NON_PREEMPTIBLE
-      securityConfig:
-        kerberosConfig: { }
-      softwareConfig:
-        imageVersion: 2.0.0-RC22-ubuntu18
-        properties:
-          spark:spark.jars.packages: 'io.delta:delta-core_2.12:0.8.0,com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.19.1'
-          spark:spark.sql.extensions: io.delta.sql.DeltaSparkSessionExtension
-          spark:spark.sql.catalog.spark_catalog: org.apache.spark.sql.delta.catalog.DeltaCatalog
-          spark:spark.databricks.delta.schema.autoMerge.enabled: "true"
       workerConfig:
         diskConfig:
           bootDiskSizeGb: 500
@@ -47,5 +42,13 @@ placement:
         minCpuPlatform: AUTOMATIC
         numInstances: 16
         preemptibility: NON_PREEMPTIBLE
-    labels:
-      customer: deltalake
+      securityConfig:
+        kerberosConfig: { }
+      #Nome e versão da imagem do cluster e propriedades necessarias para a execução de job com deltalake
+      softwareConfig:
+        imageVersion: 2.0.0-RC22-ubuntu18
+        properties:
+          spark:spark.jars.packages: 'io.delta:delta-core_2.12:0.8.0,com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.19.1'
+          spark:spark.sql.extensions: io.delta.sql.DeltaSparkSessionExtension
+          spark:spark.sql.catalog.spark_catalog: org.apache.spark.sql.delta.catalog.DeltaCatalog
+          spark:spark.databricks.delta.schema.autoMerge.enabled: "true"
