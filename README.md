@@ -42,3 +42,8 @@ Este repositório tem o objetivo de prover um ambiente de treinamento da integra
     cd treinamento-dataproc-deltalake/scripts/
     bash ./deploy_run
 ```
+
+### Referências:
+
+* [The Delta Lake Series Complete Collection](https://databricks.com/wp-content/uploads/2021/03/030521-2-The-Delta-Lake-Series-Complete-Collection.pdf)
+* [Delta Lake: Definitive Guide](https://pages.databricks.com/rs/094-YMS-629/images/Delta%20Lake%20The%20Definitive%20Guide.pdf)
