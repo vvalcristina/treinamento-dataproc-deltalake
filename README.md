@@ -10,7 +10,7 @@ Este repositório tem o objetivo de prover um ambiente de treinamento da integra
 ### Estrutura do repositório:
 
 ```shell
-    ├── input                       -> Dataframe de input 
+    ├── images                      -> Images setup
     ├── jobs 
         ├── job_deltalake.py        -> Job de merge de 2 dataframes no GCloud Storage
     ├── scripts
@@ -30,13 +30,13 @@ Este repositório tem o objetivo de prover um ambiente de treinamento da integra
 
 * Faça um git clone do projeto.
 
-* Execute o notebook *HandsOn DeltaLake.ipynb* para entender um pouco do funcionamento do Delta Lake e entendimento de execução do processo de merge de 2 datasets.
+* Execute o notebook [*HandsOn DeltaLake.ipynb*](HandsOn%20DeltaLake.ipynb) para entender um pouco do funcionamento do Delta Lake e entendimento de execução do processo de merge de 2 datasets.
 
-* Para executar esse código no Dataproc substitua o PROJECT_ID e o BUCKET_CODE_NAME para o nome do seu projeto e do seu bucket que armazena o código no ambiente do Gcloud no script *load_env*.
+* Para executar esse código no Dataproc substitua o PROJECT_ID e o BUCKET_CODE_NAME para o nome do seu projeto e do seu bucket que armazena o código no ambiente do Gcloud no script [*env*](scripts/env).
 
-* Substitua o nome do BUCKET_CODE_NAME no arquivo *workflow.yaml*
+* Substitua o nome do BUCKET_CODE_NAME no arquivo [*workflow.yaml*](workflow/workflow.yaml).
 
-* Para rodar o projeto no GCP, certifique-se que há a pasta *input/* não se encontra vazia. Os dataframes para teste podem ser criados através do Notebook.
+* Para rodar o projeto no GCP, certifique-se que há a pasta *data/input/* não se encontra vazia. Os dataframes para teste podem ser criados através do Notebook.
 
 ```
     cd treinamento-dataproc-deltalake/scripts/
