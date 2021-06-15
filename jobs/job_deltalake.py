@@ -13,6 +13,7 @@ spark = pyspark.sql.SparkSession.builder.appName("DeltaLake") \
 
 from delta import *
 from pyspark.sql.functions import *
+
 class JobIncremental(spark):
 
     def __init__(self):
