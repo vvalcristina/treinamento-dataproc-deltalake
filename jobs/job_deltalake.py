@@ -13,24 +13,15 @@ spark = pyspark.sql.SparkSession.builder.appName("DeltaLake") \
 
 from delta import *
 from pyspark.sql.functions import *
-class JobIncremental():
+class JobIncremental(spark):
 
     def __init__(self):
 
         self.path_input = 'gs://{BUCKET_LAKE_NAME}/transient/sample.parquet/'
         self.path_output = 'gs://{BUCKET_LAKE_NAME}/raw/sample.parquet/'
-        self.spark = (pyspark.sql.SparkSession.builder.appName("DeltaLake") \
-            .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0") \
-            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-            .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-            .config("spark.databricks.delta.schema.autoMerge.enabled","true") \
-            .config("spark.databricks.delta.autoOptimize.optimizeWrite","true") \
-            .config("spark.databricks.delta.optimizeWrite.enabled","true") \
-            .config("spark.databricks.delta.vacuum.parallelDelete.enabled","true") \
-            .getOrCreate())
 
-    def table_exists(self, path_output: str) -> bool:
-        return DeltaTable.isDeltaTable(self.spark, path_output)
+    def table_exists(path_output: str) -> bool:
+        return DeltaTable.isDeltaTable(spark, path_output)
 
     def get_incremental_load(self):
         df = spark.read.format("parquet").option("inferSchema", "false").load(self.path_input)
@@ -43,7 +34,7 @@ class JobIncremental():
         else:
             try:
                 logging.info(f'Writing on path: {self.path_output}')
-                deltaTable =DeltaTable.forPath(self.spark, self.path_output)
+                deltaTable =DeltaTable.forPath(spark, self.path_output)
                 (
                     deltaTable.alias("persisteddata").merge( \
                         df.alias("newdata"), \
