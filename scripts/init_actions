@@ -1,8 +1,11 @@
 #! /bin/bash -e
 
 #Jobs de inicialização do Workflow template
+
+bucket=$(/usr/share/google/get_metadata_value attributes/bucket)
+
 set -exo pipefail
 source /etc/profile.d/conda.sh
-gsutil cp -r gs://${GCP_BUCKET_CODE}/ /
-cd /${GCP_BUCKET_CODE}/
+gsutil cp -r gs://${bucket}/ /
+cd /${bucket}/
 pip install -r requirements.txt

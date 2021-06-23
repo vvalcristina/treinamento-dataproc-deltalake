@@ -6,8 +6,11 @@ cd $DIR
 
 source ./env 
 
-gcloud config set project ${PROJECT_ID}
+export GCLOUD_LAKE_BUCKET_NAME=$GCLOUD_LAKE_BUCKET_NAME
+export GCLOUD_CODE_BUCKET_NAME=$GCLOUD_CODE_BUCKET_NAME
+export GCLOUD_BACKUP_BUCKET_NAME=$GCLOUD_BACKUP_BUCKET_NAME
 
+echo "-------------Inicializando o deploy do código---------------"
 # Deploy do código local no GCP
 gsutil -m rm -R "gs://${GCP_BUCKET_CODE_NAME}/*" || true
 gsutil -m cp -r "$DIR/../jobs/" "gs://${GCP_BUCKET_CODE_NAME}/deltalake/"
@@ -17,5 +20,8 @@ gsutil cp "$DIR/../requirements.txt" "gs://${GCP_BUCKET_CODE_NAME}/requirements.
 gsutil cp "$DIR/../setup.py" "gs://${GCP_BUCKET_CODE_NAME}/setup.py"
 echo "--------------Finalizando o deploy do código---------------"
 
+source ./backup
+
+echo "--------------Subindo o cluster--------------------"
 #Run do Dataproc
 gcloud dataproc workflow-templates instantiate-from-file --file "$DIR/../workflow/workflow.yaml" --region=${REGION}
